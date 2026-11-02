@@ -1,0 +1,12 @@
+{
+  "downloadedAtUtc": "2026-11-02T14:53:48Z",
+  "actualDataset": "FUELHH",
+  "forecastDataset": "WINDFOR",
+  "actualRows": 1488,
+  "forecastRows": 18080,
+  "actualStartUtc": "2026-01-01T00:00:00Z",
+  "actualEndUtc": "2026-01-31T23:30:00Z",
+  "forecastPublishFromUtc": "2025-12-25T00:00:00Z",
+  "forecastPublishToUtcExclusive": "2026-02-01T00:00:00Z",
+  "deliveryStartTimeFilter": "2026-01-01 through 2026-01-31 inclusive"
+}

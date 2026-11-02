@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools==75.8.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "kjhwr"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = ["fastapi==0.115.12", "uvicorn[standard]==0.34.0", "pandas==2.2.3", "numpy==2.2.3", "httpx==0.28.1", "pydantic==2.10.6"]
+[project.optional-dependencies]
+dev = ["pytest==8.3.4", "ruff==0.9.7", "black==25.1.0"]
+[tool.setuptools.packages.find]
+include = ["app*"]
+[tool.pytest.ini_options]
+pythonpath=["."]
+[tool.ruff]
+line-length=100
+target-version="py311"
+[tool.ruff.lint]
+select = ["F"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
