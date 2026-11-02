@@ -36,7 +36,7 @@ Refresh the fixed January snapshot by running `python backend/scripts/fetch_data
 
 ## Deploy to Vercel
 
-The Vercel build uses the static Vite artifact plus `api/index.py`; `vercel.json` bundles the 2.3 MB JSON snapshot with the Python function. The Vercel Python runtime supports FastAPI, and its current documentation allows function `includeFiles` configuration alongside rewrites.
+The Vercel build compiles the Vite frontend and bundles its small `frontend/dist` output plus the 2.3 MB JSON snapshot with the FastAPI function. FastAPI serves the SPA shell/assets and API endpoints from the same serverless function, using the committed root `requirements.txt` for Python dependencies.
 
 1. Ensure `backend/data/actuals.json` and `forecasts.json` are populated and committed (or deploy from the already populated workspace).
 2. Install the Vercel CLI and authenticate: `npm i -g vercel; vercel login`.
@@ -45,7 +45,7 @@ The Vercel build uses the static Vite artifact plus `api/index.py`; `vercel.json
 
 ## Architecture
 
-The FastAPI service reads the committed snapshot from disk, applies the cutoff selection in UTC, joins actuals by start time, and returns typed JSON-compatible responses or CSV. The Vite React/TypeScript single-page client presents four desk views. `docker-compose.yml` runs the API plus Nginx-served static client. The Vercel config routes `/api/*` to the Python ASGI app and serves the Vite build. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The FastAPI service reads the committed snapshot from disk, applies the cutoff selection in UTC, joins actuals by start time, and returns typed JSON-compatible responses or CSV. The Vite React/TypeScript single-page client presents four desk views. `docker-compose.yml` runs the API plus Nginx-served static client. The Vercel FastAPI function serves API routes and the bundled Vite build; Docker uses Nginx for frontend hosting and proxies API requests to FastAPI. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Design decisions and assumptions
 
@@ -58,7 +58,7 @@ The FastAPI service reads the committed snapshot from disk, applies the cutoff s
 
 ## Limitations / next steps
 
-The app has not been deployed to Vercel. Live URL: [TODO_VERCEL_URL](TODO_VERCEL_URL). Run `vercel --prod` after linking a project; the static frontend and snapshot-backed Python function are configured. Validate the January bias and empirical ranges on additional delivery months before using them as operational procurement rules. The initial frontend bundle is above Vite's 500 kB advisory threshold.
+Production app: [https://kjhwr-olive-tau.vercel.app](https://kjhwr-olive-tau.vercel.app). The production frontend, `/docs`, and snapshot-backed API were opened and verified. Validate the January bias and empirical ranges on additional delivery months before using them as operational procurement rules. The initial frontend bundle is above Vite's 500 kB advisory threshold.
 
 ## Repository map
 

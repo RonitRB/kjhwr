@@ -3,7 +3,8 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from app.schemas import DaysResponse, ForecastResponse, HealthResponse
 from pathlib import Path
 import io
@@ -11,6 +12,7 @@ import os
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT.parent / "data"
+FRONTEND_DIST = ROOT.parent.parent / "frontend" / "dist"
 JAN_START = date(2026, 1, 1)
 JAN_END = date(2026, 1, 31)
 TZ = ZoneInfo("Europe/London")
@@ -323,3 +325,19 @@ def export(start: str = "2026-01-01", end: str = "2026-01-31", cutoff: str = DEF
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=windwatch.csv"},
     )
+
+
+if FRONTEND_DIST.is_dir():
+    assets = FRONTEND_DIST / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets), name="frontend-assets")
+
+    @app.get("/", include_in_schema=False)
+    def frontend_index():
+        return FileResponse(FRONTEND_DIST / "index.html")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend_fallback(path: str):
+        if path.startswith("api/"):
+            raise HTTPException(404, "API endpoint not found")
+        return FileResponse(FRONTEND_DIST / "index.html")

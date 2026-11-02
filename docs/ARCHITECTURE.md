@@ -23,9 +23,9 @@ For each hourly forecast delivery timestamp, the service computes the previous d
 - `backend/app/main.py`: validation, domain selection, analysis calculations, REST and CSV output.
 - `backend/data/`: committed snapshot location.
 - `frontend/src/main.tsx`: four dashboard sections and charts.
-- `api/index.py`, `vercel.json`: serverless API routing and static Vite build.
+- `api/index.py`, `vercel.json`: serverless FastAPI entrypoint, bundled Vite build, and snapshot inclusion.
 - Dockerfiles and compose: local production-like run.
 
 ## Deployment
 
-Docker runs FastAPI on port 8000 and Nginx on 3000. Vercel builds the frontend as a static Vite artifact and bundles the FastAPI ASGI entrypoint with the approximately 2.3 MB snapshot. No runtime data source is required. Vercel's package limits should be checked after the real snapshot is populated.
+Docker runs FastAPI on port 8000 and Nginx on 3000. Vercel builds the Vite frontend and bundles its small `frontend/dist` output, FastAPI ASGI entrypoint, dependencies, and approximately 2.3 MB snapshot into the Python function. FastAPI serves the SPA shell/assets as well as API routes. No runtime data source is required; the production deployment was verified at the live app and `/docs` routes.
