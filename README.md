@@ -41,7 +41,7 @@ The Vercel build compiles the Vite frontend and bundles its small `frontend/dist
 1. Ensure `backend/data/actuals.json` and `forecasts.json` are populated and committed (or deploy from the already populated workspace).
 2. Install the Vercel CLI and authenticate: `npm i -g vercel; vercel login`.
 3. From repository root run `vercel --prod` and follow project linking prompts.
-4. No environment variables are required. Optionally set `DECISION_CUTOFF` to an `HH:MM` Europe/London value (default `09:00`). Vercel deployment has not been run here.
+4. No environment variables are required. Optionally set `DECISION_CUTOFF` to an `HH:MM` Europe/London value (default `09:00`). Production deployment: https://kjhwr-olive-tau.vercel.app. The frontend, /docs, and snapshot-backed API have been verified.
 
 ## Architecture
 
