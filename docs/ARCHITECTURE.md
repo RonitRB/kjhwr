@@ -15,7 +15,7 @@ flowchart LR
 
 `fetch_data.py` requests FUELHH one settlement day at a time and WINDFOR one publication day at a time, with retries and bounded HTTP timeouts. It filters FUELHH to WIND and forecast delivery times to January 2026. Snapshot JSON files are read locally by FastAPI, so runtime operation is offline once those files are populated.
 
-For each forecast delivery timestamp, the service computes the previous delivery date's 09:00 Europe/London cutoff, converts it to UTC, filters WINDFOR publications to `publishTime <= cutoff`, and chooses the latest publication. Actuals and selected forecasts are outer joined on UTC `startTime`; missing rows remain visible. FUELHH is 30-minute and the retrieved WINDFOR records are hourly, so direct joins intentionally match only exact timestamps. Daily energy integrates each forecast point over its observed one-hour interval. Horizon charts join every vintage to the actual at the same timestamp, separately from the cutoff selection.
+For each hourly forecast delivery timestamp, the service computes the previous delivery date's configurable Europe/London cutoff, converts it to UTC, filters WINDFOR publications to `publishTime <= cutoff`, and chooses the latest publication. FUELHH half-hour readings are averaged within each UTC hour, then actual hourly means and selected forecasts are outer joined on UTC `startTime`; missing rows remain visible. Daily energy sums each hourly MW forecast across its one-hour interval. Horizon charts join every forecast vintage to that same hourly actual mean, separately from the cutoff selection.
 
 ## Module responsibilities
 

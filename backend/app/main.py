@@ -65,6 +65,22 @@ def _select_latest_forecasts(forecasts: pd.DataFrame, cutoff: str) -> pd.DataFra
     )
 
 
+def _aggregate_actuals_hourly(actual: pd.DataFrame, start: date, end: date) -> pd.DataFrame:
+    """Average the two UTC half-hour FUELHH readings into each forecast hour."""
+    if actual.empty:
+        return pd.DataFrame(
+            {
+                "startTime": pd.Series(dtype="datetime64[ns, UTC]"),
+                "generation": pd.Series(dtype="float64"),
+            }
+        )
+    hourly = actual.copy()
+    hourly["startTime"] = pd.to_datetime(hourly["startTime"], utc=True, errors="coerce")
+    hourly = hourly[(hourly.startTime.dt.date >= start) & (hourly.startTime.dt.date <= end)]
+    hourly["startTime"] = hourly.startTime.dt.floor("h")
+    return hourly.groupby("startTime", as_index=False, sort=True)["generation"].mean()
+
+
 def _tables(start, end, cutoff=DEFAULT_CUTOFF):
     actual = pd.DataFrame(_load("actuals"))
     fc = pd.DataFrame(_load("forecasts"))
@@ -75,7 +91,7 @@ def _tables(start, end, cutoff=DEFAULT_CUTOFF):
     for df, c in [(actual, "startTime"), (fc, "startTime")]:
         df[c] = pd.to_datetime(df[c], utc=True, errors="coerce")
     fc["publishTime"] = pd.to_datetime(fc["publishTime"], utc=True, errors="coerce")
-    a = actual[(actual.startTime.dt.date >= start) & (actual.startTime.dt.date <= end)].copy()
+    a = _aggregate_actuals_hourly(actual, start, end)
     f = fc[(fc.startTime.dt.date >= start) & (fc.startTime.dt.date <= end)].copy()
     f = _select_latest_forecasts(f, cutoff)
     m = (
@@ -264,7 +280,7 @@ def by_horizon(start: str = "2026-01-01", end: str = "2026-01-31"):
     actual["startTime"] = pd.to_datetime(actual["startTime"], utc=True, errors="coerce")
     forecasts["startTime"] = pd.to_datetime(forecasts["startTime"], utc=True, errors="coerce")
     forecasts["publishTime"] = pd.to_datetime(forecasts["publishTime"], utc=True, errors="coerce")
-    actual = actual[(actual.startTime.dt.date >= first) & (actual.startTime.dt.date <= last)]
+    actual = _aggregate_actuals_hourly(actual, first, last)
     forecasts = forecasts[
         (forecasts.startTime.dt.date >= first) & (forecasts.startTime.dt.date <= last)
     ]
