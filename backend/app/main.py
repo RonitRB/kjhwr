@@ -115,6 +115,8 @@ def _metrics(m):
             "mae": None,
             "rmse": None,
             "bias": None,
+            "biasCorrectedMae": None,
+            "biasCorrectedRmse": None,
             "mape": None,
             "r2": None,
             "correlation": None,
@@ -128,11 +130,15 @@ def _metrics(m):
             "missingActual": int(m.generation.isna().sum()),
         }
     ss = ((x.generation - x.generation.mean()) ** 2).sum()
+    mean_error = e.mean()
+    bias_corrected_error = e - mean_error
     return {
         "n": len(x),
         "mae": float(e.abs().mean()),
         "rmse": float((e.pow(2).mean()) ** 0.5),
-        "bias": float(e.mean()),
+        "bias": float(mean_error),
+        "biasCorrectedMae": float(bias_corrected_error.abs().mean()),
+        "biasCorrectedRmse": float((bias_corrected_error.pow(2).mean()) ** 0.5),
         "mape": float((e.abs() / x.generation.clip(lower=1)).mean() * 100),
         "r2": float(1 - (e.pow(2).sum() / ss)) if ss else None,
         "correlation": float(x.generation.corr(x.forecast)) if len(x) > 1 else None,

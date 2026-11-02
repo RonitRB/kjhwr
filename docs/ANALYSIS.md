@@ -33,6 +33,8 @@ Metrics below use all 744 hourly pairs. Error is actual hourly mean minus foreca
 |---|---:|
 | MAE | **2,142 MW** |
 | RMSE | **2,612 MW** |
+| Bias-corrected MAE (in-sample) | **1,435 MW** |
+| Bias-corrected RMSE (in-sample) | **1,842 MW** |
 | Mean error / bias | **−1,852 MW** |
 | NMAE | **22.38%** |
 | R² | **0.604** |
@@ -40,7 +42,11 @@ Metrics below use all 744 hourly pairs. Error is actual hourly mean minus foreca
 | Absolute error P50 / P75 | **1,788 / 3,013 MW** |
 | Absolute error P90 / P95 / P99 | **4,300 / 5,307 / 6,261 MW** |
 
-A negative mean error means the forecast over-forecast wind by about 1.85 GW on average in this January sample. The 22.38% NMAE is confirmed by the corrected 744-point calculation. It remains unusually high enough to warrant operational scrutiny, but this one month and source pairing do not establish the cause. We verified the cutoff and UTC pairing on a concrete date; comparisons over more delivery months would be needed before applying any bias correction.
+A negative mean error means the day-ahead wind forecast ran about **1.85 GW above actual output on average** in January. For a buyer, that observed bias is a quantified reason to plan extra thermal cover or evaluate a bias correction. Correlation is **0.928** while R² is **0.604**: the forecast tracks the broad shape of actual wind relatively well, while the level differs materially, consistent with a large systematic offset in this sample.
+
+Removing the January mean signed error from every error gives **bias-corrected MAE 1,435 MW** and **bias-corrected RMSE 1,842 MW**, versus raw MAE 2,142 MW and RMSE 2,612 MW. These are in-sample diagnostics: the same January data estimates and removes the offset, so the adjusted scores show the residual spread around that mean but do not predict the result of a future correction.
+
+The persistent level difference is an observed finding; its cause is unknown. One hypothesis is a measurement-basis gap: FUELHH WIND may exclude embedded generation while WINDFOR may use a different basis. That is not confirmed by this dataset. Other causes remain possible. We verified the cutoff and UTC pairing on a concrete date; comparisons over more delivery months and validation of the data definitions are needed before applying a bias correction operationally.
 
 ## Worst periods and slices
 

@@ -70,3 +70,17 @@ def test_jan15_audit_uses_latest_eligible_publish_and_hourly_actuals():
     assert sample.publishTime == pd.Timestamp("2026-01-14T07:30:00Z")
     assert sample.forecast == 15834.0
     assert sample.generation == 14456.5
+
+
+def test_bias_corrected_metrics_remove_mean_signed_error():
+    frame = pd.DataFrame(
+        {
+            "generation": [100.0, 200.0],
+            "forecast": [90.0, 205.0],
+            "error": [10.0, -5.0],
+        }
+    )
+    result = _metrics(frame)
+    assert result["bias"] == 2.5
+    assert result["biasCorrectedMae"] == 7.5
+    assert result["biasCorrectedRmse"] == 7.5
